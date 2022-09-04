@@ -484,7 +484,7 @@ def binary_search_words_in_fields_from_file(references_location: str, fields: li
                     tmp_word = "1"
                 else:
                     tmp_word = "0"
-                tmp_str = tmp_word + tmp_str
+                tmp_str = tmp_str + tmp_word
             return_dict[idx][field] = tmp_str
     return return_dict
 
@@ -494,12 +494,14 @@ def binary_boolean_condition_math_from_file(references_location: str, fields: li
     return_dict = {}
     binary_dict = binary_search_words_in_fields_from_file(
         references_location, fields, words)
+
     for bin_reps in binary_dict:
         return_dict[bin_reps] = {}
 
         for field in fields:
             flag = 0
             return_dict[bin_reps][field] = {}
+
             for condition in conditions:
                 idx = conditions.index(condition)
                 return_dict[bin_reps][field][f"Split Data {idx}"] = binary_dict[bin_reps][field][flag:condition]
@@ -507,6 +509,7 @@ def binary_boolean_condition_math_from_file(references_location: str, fields: li
 
             idx = idx + 1
             return_dict[bin_reps][field][f"Split Data {idx}"] = binary_dict[bin_reps][field][condition:]
+
     return return_dict
 
 
@@ -534,25 +537,19 @@ def binary_string_syntax_parser_from_file(references_location: str, fields: list
     return return_dict
 
 
-def complete_binary_strin_syntax_parser_from_file(references_location: str, fields: list[str], words: list[str], conditions: list[int]) -> dict:
+def binary_string_syntax_evaluation_from_file(references_location: str, fields: list[str], words: list[str], conditions: list[int]) -> dict:
+
     # TODO: Include description and make this piece of shit code, better.
     return_dict = {}
-    binary_match = binary_boolean_condition_math_from_file(
+    string_syntax_dict = binary_string_syntax_parser_from_file(
         references_location, fields, words, conditions)
 
-    for item in binary_match:
+    for item in string_syntax_dict:
+        value = string_syntax_dict[item]
         return_dict[item] = {}
-        tmp_match = 0
-        for topic in binary_match[item]:
-            return_dict[item][topic] = {}
-            tmp_word_condition = 1
-            for data in binary_match[item][topic]:
-                tmp_bit = 0
-                for bit in binary_match[item][topic][data]:
-                    tmp_bit = int(bit) | int(tmp_bit)
-                tmp_word_condition = int(tmp_bit) & int(tmp_word_condition)
-            tmp_match = int(tmp_word_condition) | int(tmp_match)
-            return_dict[item][topic] = tmp_match
+        for topic in string_syntax_dict[item]:
+            return_dict[item][topic] = eval(value[topic])
+
     return return_dict
 
 
