@@ -9,6 +9,7 @@ def create_research_chapters(chapter_names: list[str]) -> dict[str]:
 
 
 def _save_file(string_data: str, file_name: str) -> None:
+
     with open(file_name, "w", encoding="UTF-8") as wfile:
         json.dump(string_data, wfile, indent=4, ensure_ascii=False)
     return None

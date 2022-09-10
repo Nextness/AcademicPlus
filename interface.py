@@ -1,6 +1,7 @@
 import dearpygui.dearpygui as dpg
 import AcademicPlus.CommonOperations as cmnops
 import AcademicPlus.ResearchManager as resm
+import AcademicPlus.InterfaceOperations as intops
 import os
 import json
 import textwrap
@@ -11,13 +12,38 @@ BODY_POS = (10, 80)
 
 cwd = os.getcwd()
 file = "Research_Analysis\dissertation_textual_content.json"
-
 return_dict = cmnops.load_json_file(f"{cwd}\{file}")
 
 dpg.create_context()
 
+# Main window
 with dpg.window(tag="MainWindow"):
 
+    # TODO: Main menu: which needs to be worked on further.
+    with dpg.menu_bar():
+        with dpg.menu(label="View"):
+            dpg.add_menu_item(label="File Metadata")
+
+    # TODO: Minimap: contains metadata about the chapters of the reserach.
+    # Requires further development to include more relevant informatio and be able
+    # to open and close it at will.
+    with dpg.window(tag="window_file_metadata"):
+
+        for idx1, item in enumerate(return_dict):
+            information = intops.reserach_metadata(return_dict, item)
+
+            dpg.add_text(
+                tag=f"text_file_metadata_{idx1}",
+                default_value=information,
+            )
+
+            dpg.add_spacer(height=2)
+
+    # TODO: Main tab bar with all the different chapters for the research.
+    # Requires a save option which can get all the different fields and save into a
+    # .json file format for later use.
+    # TODO: Include different input_text widgets for each paragraph.
+    # TODO: Make this section of code look better.
     with dpg.tab_bar(tag="ResearchTabBar"):
         input_list = []
         for idx, item in enumerate(return_dict):
