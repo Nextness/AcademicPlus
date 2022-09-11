@@ -1,8 +1,7 @@
-import os
-import hashlib as hs
 import AcademicPlus.CommonOperations as cmnops
-
-NOT_AVAILABLE = "NOT AVAILABLE"
+import AcademicPlus.DataStructures as Struct
+import hashlib as hs
+import os
 
 
 def _load_bib_files_from_folder(folder_name: str) -> list:
@@ -16,16 +15,17 @@ def _load_bib_files_from_folder(folder_name: str) -> list:
     Return:
     file_data: concatenation of all .bib data in a string
     """
-    all_data = []
+    all_data = list()
     folder = os.walk(folder_name)
     main_folder = next(folder)
     count_all_files = main_folder[2]
 
     for file in count_all_files:
-        if ".bib" in file:
+        validation = ".bib" == file[-4:]
+        if validation:
             with open(folder_name + file, "r", encoding="UTF-8") as rfile:
                 file_data = rfile.read()
-                all_data = all_data + [file_data]
+                all_data += [file_data]
         else:
             continue
 
@@ -56,7 +56,7 @@ def _replace_unnecessary_charcters(all_data: str) -> str:
     for key, value in replace_dic.items():
         all_data = all_data.replace(key, value)
 
-    all_data = all_data.encode('UTF-8', 'ignore').decode("utf-8")
+    all_data = all_data.encode('UTF-8', 'ignore').decode("UTF-8")
     return all_data
 
 
@@ -77,7 +77,7 @@ def _split_all_data(all_data_str: str) -> list:
 
     data_split = all_data_str.split("@article")
 
-    data_split_topic = []
+    data_split_topic = list()
     for item in data_split:
         data_split_topic = [str(item).split("\\n")] + data_split_topic
 
@@ -118,6 +118,37 @@ def _hash_doi(doi: str) -> str:
     return hash_content.hexdigest()
 
 
+def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
+                                     data_entry: Struct.BibDataFormat) -> Struct.BibDataFormat:
+
+    # TODO: include description of this function.
+    if dict_key == "title":
+        data_entry.Title = dict_value
+    elif dict_key == "journal":
+        data_entry.Journal = dict_value
+    elif dict_key == "volume":
+        data_entry.Volume = dict_value
+    elif dict_key == "pages":
+        data_entry.Pages = dict_value
+    elif dict_key == "year":
+        data_entry.Year = dict_value
+    elif dict_key == "issn":
+        data_entry.ISSN = dict_value
+    elif dict_key == "doi":
+        data_entry.DOI = dict_value
+        data_entry.Hashed_DOI = _hash_doi(dict_value)
+    elif dict_key == "url":
+        data_entry.URL = dict_value
+    elif dict_key == "author":
+        data_entry.Author = dict_value
+    elif dict_key == "keywords":
+        data_entry.Keywords = dict_value
+    elif dict_key == "abstract":
+        data_entry.Abstract = dict_value
+
+    return data_entry
+
+
 def _structure_data_split(data_split_topic: list) -> dict:
     """
     This function has the objective of constructing the dictonary based on a
@@ -130,108 +161,28 @@ def _structure_data_split(data_split_topic: list) -> dict:
     parser_result: Dictionary with all entries and their description
     """
 
-    idx = 0
-    parser_result = {}
-    data_split_topic.remove([['"']])
-    for item in data_split_topic:
-        tmp_dict = {}
+    parser_result = dict()
+    for idx, item in enumerate(data_split_topic):
+
+        entry = Struct.BibDataFormat()
         for topic in item:
-            if len(topic) < 2:
+
+            topic = str(topic)
+            if topic[0] == '':
                 continue
 
-            key = str(topic[0])
-            value = str(topic[1])
-            if key == "doi":
-                tmp_dict["DOI"] = value[::-1].replace(",", "", 1)[::-1]
-                tmp_dict["Hashed DOI"] = _hash_doi(value)
+            if len(topic) == 1:
+                entry.Default_Key = topic[0].replace(",", "")
                 continue
 
-            value = str(topic[1]).upper()
-            if key != "keywords" or key != "abstract":
-                value = value.replace(",", "")
-            elif key == "keywords":
-                # This inversts the value to remove the first
-                # occurance of the coma
-                value = value[::-1].replace(",", "", 1)[::-1]
-            elif key == "abstract":
-                # This inversts the value to remove the first
-                # occurance of the coma
+            key, value = topic[0].casefold(), topic[1]
+            if value[-1] == ",":
                 value = value[::-1].replace(",", "", 1)[::-1]
 
-            if key == "title":
-                tmp_dict["Title"] = value
-                continue
-            if key == "journal":
-                tmp_dict["Journal"] = value
-                continue
-            if key == "volume":
-                tmp_dict["Volume"] = value
-                continue
-            if key == "pages":
-                tmp_dict["Pages"] = value
-                continue
-            if key == "year":
-                tmp_dict["Year"] = int(value)
-                continue
-            if key == "issn":
-                tmp_dict["ISSN"] = value
-                continue
-            if key == "url":
-                tmp_dict["URL"] = value
-                continue
-            if key == "author":
-                tmp_dict["Author"] = value
-                continue
-            if key == "keywords":
-                tmp_dict["Keywords"] = value
-                continue
-            if key == "abstract":
-                tmp_dict["Abstract"] = value
-                continue
-        parser_result[idx] = tmp_dict
-        idx += 1
+            entry = _transform_list_to_BibDataFormat(key, value, entry)
 
-    return parser_result
+        parser_result[idx] = cmnops.BibDataFormat_to_dict(entry)
 
-
-def _format_structure_data(parser_result: dict) -> dict:
-    """
-    This function has the objective of including fields which could not
-    be included as they were missing in the .bib file.
-
-    Keyword Arguments:
-    parser_result: Dictonary with .bib references already constructed
-
-    Return:
-    parser_result: Dictonary with .bib references with NOT_AVAILABLE included
-    in the missing fields
-    """
-
-    for item in parser_result:
-        print(parser_result[item])
-        if "Title" not in parser_result[item]:
-            parser_result[item]["Title"] = NOT_AVAILABLE
-        if "Journal" not in parser_result[item]:
-            parser_result[item]["Journal"] = NOT_AVAILABLE
-        if "Volume" not in parser_result[item]:
-            parser_result[item]["Volume"] = NOT_AVAILABLE
-        if "Year" not in parser_result[item]:
-            parser_result[item]["Year"] = NOT_AVAILABLE
-        if "Pages" not in parser_result[item]:
-            parser_result[item]["Pages"] = NOT_AVAILABLE
-        if "ISSN" not in parser_result[item]:
-            parser_result[item]["ISSN"] = NOT_AVAILABLE
-        if "DOI" not in parser_result[item]:
-            parser_result[item]["DOI"] = NOT_AVAILABLE
-            parser_result[item]["Hashed DOI"] = NOT_AVAILABLE
-        if "URL" not in parser_result[item]:
-            parser_result[item]["URL"] = NOT_AVAILABLE
-        if "Author" not in parser_result[item]:
-            parser_result[item]["Author"] = NOT_AVAILABLE
-        if "Keywords" not in parser_result[item]:
-            parser_result[item]["Keywords"] = NOT_AVAILABLE
-        if "Abstract" not in parser_result[item]:
-            parser_result[item]["Abstract"] = NOT_AVAILABLE
     return parser_result
 
 
@@ -251,7 +202,6 @@ def parse_save_bib_references_to_file(folder_name: str, save_file_name_loc: str)
     unnecessary_chars = _replace_unnecessary_charcters(load_bib)
     split_data = _split_all_data(unnecessary_chars)
     structure_data = _structure_data_split(split_data)
-    formatted_dict = _format_structure_data(structure_data)
-    cmnops._save_file_safe(formatted_dict, save_file_name_loc)
+    cmnops._save_file_safe(structure_data, save_file_name_loc)
 
     return None

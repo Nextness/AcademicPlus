@@ -1,17 +1,10 @@
+import AcademicPlus.DataStructures as Struct
+from dataclasses import asdict
 import json
 import os
 
 
-def _processed_confirmation() -> str:
-    confirmation = input("Do you want to save the file? Please type Y or N:")
-
-    while not (confirmation == "Y" or confirmation == "N"):
-        confirmation = input("Please type Y or N:")
-
-    return str(confirmation)
-
-
-def _save_file_unsafe(dict_name: dict, save_file_name_loc: str) -> None:
+def _save_file_unsafe(dict_name: dict, save_file_name_loc: str) -> int:
     """
     This function has the objective of sabe the created dictionary file into a
     json file format to be later utilized.
@@ -23,57 +16,55 @@ def _save_file_unsafe(dict_name: dict, save_file_name_loc: str) -> None:
     Return:
     None
     """
+    try:
 
-    with open(save_file_name_loc + ".json", "w", encoding="UTF-8") as wfile:
-        json.dump(dict_name, wfile, indent=4, ensure_ascii=False)
+        if type(dict_name) is not dict:
+            return 1
 
-    return None
+        with open(f"{save_file_name_loc}", "w", encoding="UTF-8") as wfile:
+            json.dump(dict_name, wfile, indent=4, ensure_ascii=False)
+
+    except RuntimeError:
+        print(f"Not possible to save the file {save_file_name_loc}.")
+        return 1
+
+    return 0
 
 
-def _save_file_safe(dict_name: dict, save_file_name_loc: str) -> None:
+def _save_file_safe(dict_name: dict, save_file_name_loc: str) -> int:
     """
     This function has the objective of sabe the created dictionary file into a
     json file format to be later utilized.
-
     Keyword Arguments:
     dict_name: dictionary with .bib references
     save_file_name_loc: string containing the location to save the file and the name to be utilized
     without the extesion (it is automatically sabed as .json)
-
     Return:
     None
     """
 
-    validation = _processed_confirmation()
+    tmp_name = save_file_name_loc + ".json"
 
-    if validation == "N":
-        print("File not saved.")
-        return None
+    if "/" in save_file_name_loc:
+        tmp_file_name = save_file_name_loc[::-1].split("/", 1)[::-1][1]
+        file_names = next(os.walk(tmp_file_name))[2]
 
-    if validation == "Y":
+        for name in file_names:
+            tmp_name = name + ".json"
+            if tmp_name in tmp_file_name[0]:
+                print("File with name already saved. Please select another name.")
+                return 1
 
-        tmp_name = save_file_name_loc + ".json"
+    elif tmp_name in os.listdir(os.curdir):
+        print("File with name already saved. Please select another name.")
+        return 1
 
-        if "/" in save_file_name_loc:
-            tmp_file_name = save_file_name_loc[::-1].split("/", 1)[::-1][1]
-            file_names = next(os.walk(tmp_file_name))[2]
+    with open(save_file_name_loc + ".json", "w", encoding="UTF-8") as wfile:
+        json.dump(dict_name, wfile, indent=4, ensure_ascii=False)
 
-            for name in file_names:
-                tmp_name = name + ".json"
-                if tmp_name in tmp_file_name[0]:
-                    print("File with name already saved. Please select another name.")
-                    return None
+    print(f"File {save_file_name_loc}.json has been saved.")
 
-        elif tmp_name in os.listdir(os.curdir):
-            print("File with name already saved. Please select another name.")
-            return None
-
-        with open(save_file_name_loc + ".json", "w", encoding="UTF-8") as wfile:
-            json.dump(dict_name, wfile, indent=4, ensure_ascii=False)
-
-        print(f"File {save_file_name_loc}.json has been saved.")
-
-    return None
+    return 0
 
 
 def load_json_file(references_location: str) -> dict:
@@ -97,3 +88,7 @@ def j_print(dictonary: dict, indent: int = 4, ensure_ascii: bool = False) -> Non
     # TODO: Include description for this function.
     print(json.dumps(dictonary, indent=indent, ensure_ascii=ensure_ascii))
     return None
+
+
+def BibDataFormat_to_dict(input: Struct.BibDataFormat) -> dict[str]:
+    return asdict(input)
