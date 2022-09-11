@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
 import AcademicPlus.CommonOperations as cmnops
+import matplotlib.pyplot as plt
 
 
 def references_differential_from_file(new_references_location: str, old_references_location: str) -> list:
