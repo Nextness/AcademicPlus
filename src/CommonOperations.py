@@ -1,7 +1,26 @@
-import AcademicPlus.DataStructures as Struct
+import src.DataStructures as Struct
 from dataclasses import asdict
+import hashlib as hs
 import json
 import os
+
+
+def _hash_string(string: str) -> str:
+    """
+    This function has the objective of hashing the DOI to
+    make it easier to do computations later.
+
+    Keyword Arguments:
+    doi: str
+
+    Return:
+    hash_content: hexadecimal str
+    """
+
+    hash_content = hs.sha1()
+    hash_content.update(str(string).encode('utf8'))
+
+    return hash_content.hexdigest()
 
 
 def _save_file_unsafe(dict_name: dict, save_file_name_loc: str) -> int:
