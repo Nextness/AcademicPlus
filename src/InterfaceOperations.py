@@ -1,4 +1,5 @@
-import AcademicPlus.ResearchManager as resm
+import src.ResearchManager as resm
+import src.CommonOperations as cmnops
 import dearpygui.dearpygui as dpg
 import textwrap
 
@@ -92,23 +93,39 @@ def make_research_body(input_dict: dict[str]) -> None:
 
             for idx3, content in enumerate(input_dict[item]["Content"]):
                 tmp = input_dict[item]["Content"][content]
-                tmp = textwrap.fill(tmp, 80)
 
                 dpg.add_text(
-                    default_value=content,
+                    default_value=f"{content} - Saved Paragraph Hash:{cmnops._hash_string(tmp)}",
                     pos=[
                         10,
-                        idx3 * 230 + 140
+                        idx3 * 260 + 140
                     ]
                 )
 
+                dpg.add_text(
+                    default_value=f"Current Paragraph Hash:{cmnops._hash_string(tmp)}",
+                    pos=[
+                        620,
+                        idx3 * 260 + 140
+                    ]
+                )
+
+                dpg.add_text(
+                    default_value=f"Current Paragraph Hash:{cmnops._hash_string(tmp)}",
+                    pos=[
+                        620,
+                        idx3 * 260 + 160
+                    ]
+                )
+
+                tmp = textwrap.fill(tmp, 80)
                 dpg.add_input_text(
                     readonly=True,
-                    tag=f"input{idx}{content}",
+                    tag=f"tag_add_input_text_paragraph_{idx}{idx3}_read_only",
                     multiline=True,
                     pos=[
                         10,
-                        idx3 * 230 + 160
+                        idx3 * 260 + 180
                     ],
                     default_value=tmp,
                     tab_input=True,
@@ -117,11 +134,11 @@ def make_research_body(input_dict: dict[str]) -> None:
                 )
 
                 dpg.add_input_text(
-                    tag=f"input{idx}{content}_2",
+                    tag=f"tag_add_input_text_paragraph_{idx}{idx3}_write",
                     multiline=True,
                     pos=[
                         620,
-                        idx3 * 230 + 160
+                        idx3 * 260 + 180
                     ],
                     default_value=tmp,
                     tab_input=True,

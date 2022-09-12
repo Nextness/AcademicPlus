@@ -1,5 +1,5 @@
-import AcademicPlus.CommonOperations as cmnops
-import AcademicPlus.DataStructures as Struct
+import src.CommonOperations as cmnops
+import src.DataStructures as Struct
 import hashlib as hs
 import os
 
@@ -100,24 +100,6 @@ def _split_all_data(all_data_str: str) -> list:
     return data_split_topic
 
 
-def _hash_doi(doi: str) -> str:
-    """
-    This function has the objective of hashing the DOI to
-    make it easier to do computations later.
-
-    Keyword Arguments:
-    doi: str
-
-    Return:
-    hash_content: hexadecimal str
-    """
-
-    hash_content = hs.sha1()
-    hash_content.update(str(doi).encode('utf8'))
-
-    return hash_content.hexdigest()
-
-
 def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
                                      data_entry: Struct.BibDataFormat) -> Struct.BibDataFormat:
 
@@ -136,7 +118,7 @@ def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
         data_entry.ISSN = dict_value
     elif dict_key == "doi":
         data_entry.DOI = dict_value
-        data_entry.Hashed_DOI = _hash_doi(dict_value)
+        data_entry.Hashed_DOI = cmnops._hash_string(dict_value)
     elif dict_key == "url":
         data_entry.URL = dict_value
     elif dict_key == "author":

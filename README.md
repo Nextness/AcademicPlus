@@ -5,6 +5,9 @@ This library has the objective o evaluating `.bib` and `.tex` file inside a fold
 
 # TODO
 
-- [ ] Create a dataclass for all the different formats utilized in this library to make it easier to port if necessary;
-- [ ] Refactor the code to support dataclasses;
+- [x] Create a dataclass for all the different formats utilized in this library to make it easier to port if necessary;
+- [ ] Refactor the code to support dataclasses and improve performance;
+  - [ ] Refactor functions to utilize dataclasses already created;
+  - [ ] Refactor parsers to increase performance;
 - [ ] Transfer all the functions into Cython;
+- [ ] 100% Library unit test coverage.

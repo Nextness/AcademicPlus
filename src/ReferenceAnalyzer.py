@@ -1,4 +1,4 @@
-import AcademicPlus.CommonOperations as cmnops
+import src.CommonOperations as cmnops
 import matplotlib.pyplot as plt
 
 
