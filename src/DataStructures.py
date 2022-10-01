@@ -1,25 +1,40 @@
-from dataclasses import asdict, dataclass, fields
+from dataclasses import dataclass
+import src.CommonOperations as cmnops
+
+NOT_PROVIDED = "Not_Provided"
 
 
 @dataclass
 class BibDataFormat:
-    Default_Key: str = "NOT PROVIDED"
-    Title: str = "NOT PROVIDED"
-    Journal: str = "NOT PROVIDED"
-    Volume: int = "NOT PROVIDED"
-    Pages: str = "NOT PROVIDED"
-    Year: int = "NOT PROVIDED"
-    ISSN: str = "NOT PROVIDED"
-    DOI: str = "NOT PROVIDED"
-    Hashed_DOI: str = "NOT PROVIDED"
-    URL: str = "NOT PROVIDED"
-    Author: str = "NOT PROVIDED"
-    Keywords: str = "NOT PROVIDED"
-    Abstract: str = "NOT PROVIDED"
+    Original_File_Name: str = NOT_PROVIDED
+    Default_Key: str = NOT_PROVIDED
+    Title: str = NOT_PROVIDED
+    Journal: str = NOT_PROVIDED
+    Volume: int = NOT_PROVIDED
+    Pages: str = NOT_PROVIDED
+    Year: int = NOT_PROVIDED
+    ISSN: str = NOT_PROVIDED
+    DOI: str = NOT_PROVIDED
+    Hashed_DOI: str = NOT_PROVIDED
+    URL: str = NOT_PROVIDED
+    Author: list[str] = NOT_PROVIDED
+    Keywords: list[str] = NOT_PROVIDED
+    Abstract: str = NOT_PROVIDED
 
 
 @dataclass
 class TexDataFormat:
-    Chapter_Number: int = "NOT PROVIDED"
-    Chapter_Name: str = "NOT PROVIDED"
-    Content: list[str] = "NOT PROVIDED"
+    Chapter_Number: int = NOT_PROVIDED
+    Chapter_Name: str = NOT_PROVIDED
+    Content: list[str | list[str]] = NOT_PROVIDED
+
+
+@dataclass
+class _JsonDataFormat:
+    Index: int = "NOT PROIDED"
+    Content: BibDataFormat | TexDataFormat = NOT_PROVIDED
+
+
+@dataclass
+class JsonDataFormat:
+    JsonData: list[_JsonDataFormat]

@@ -41,8 +41,7 @@ def include_notes_to_file(references_location: str, hashed_doi: str, note: str) 
     None
     """
 
-    _references_location = cmnops.load_json_file(
-        references_location)
+    _references_location = cmnops.load_json_file(references_location)
     references_location = references_location.replace(".json", "")
 
     for item in _references_location:
@@ -73,8 +72,7 @@ def search_words_in_fields_from_file(references_location: str, fields: list[str]
     was found or not (0 for not found and 1 for found)
     """
     return_dict = {}
-    _references_location = cmnops.load_json_file(
-        references_location)
+    _references_location = cmnops.load_json_file(references_location)
 
     for item in _references_location:
         idx = _references_location[item]["Hashed DOI"]
@@ -109,8 +107,7 @@ def binary_search_words_in_fields_from_file(references_location: str, fields: li
     """
 
     return_dict = {}
-    _references_location = cmnops.load_json_file(
-        references_location)
+    _references_location = cmnops.load_json_file(references_location)
 
     for item in _references_location:
         idx = _references_location[item]["Hashed DOI"]
@@ -192,7 +189,37 @@ def binary_string_syntax_evaluation_from_file(references_location: str, fields: 
     return return_dict
 
 
-def count_references_by_year_from_file(references_location: str) -> dict:
+def _count_from_json_file(references_location: str, field_name: str) -> dict:
+    # TODO: Inclue documentation for this function.
+    count_by_year_dict = {}
+    _references_location = cmnops.load_json_file(
+        references_location)
+
+    for item in _references_location:
+        tmp = _references_location[item][field_name]
+        if tmp not in count_by_year_dict:
+            count_by_year_dict.update({tmp: 1})
+        else:
+            count_by_year_dict[tmp] = count_by_year_dict[tmp] + 1
+
+    return count_by_year_dict
+
+
+def _count_loaded_dict_file(dict_name: dict[str], field_name: str) -> dict:
+    # TODO: Include documentation for this function.
+    count_by_year_dict = {}
+
+    for item in dict_name:
+        tmp = dict_name[item][field_name]
+        if tmp not in count_by_year_dict:
+            count_by_year_dict[tmp] = 1
+        else:
+            count_by_year_dict[tmp] = count_by_year_dict[tmp] + 1
+
+    return count_by_year_dict
+
+
+def count_references_by_year_from_loaded_dict(references_location: str) -> dict:
     """
     This function has the objective of counting the number of articles per year
     based on the .json created when parsing the .bib referencial.
@@ -204,19 +231,40 @@ def count_references_by_year_from_file(references_location: str) -> dict:
     sorted_count_by_year_dict: dictionary with all count per year of published
     articles in the .json file
     """
-    count_by_year_dict, sorted_count_by_year_dict = {}, {}
+    sorted_count_by_year_dict = dict()
     _references_location = cmnops.load_json_file(
         references_location)
 
-    for item in _references_location:
-        tmp = _references_location[item]["Year"]
-        if tmp not in count_by_year_dict:
-            count_by_year_dict.update({tmp: 1})
-        else:
-            count_by_year_dict[tmp] = count_by_year_dict[tmp] + 1
+    count_references_dict = _count_loaded_dict_file(
+        _references_location, "Year")
 
-    for key in sorted(count_by_year_dict):
-        sorted_count_by_year_dict.update({key: count_by_year_dict[key]})
+    for key in sorted(count_references_dict):
+        sorted_count_by_year_dict.update({key: count_references_dict[key]})
+
+    return sorted_count_by_year_dict
+
+
+def count_number_journals_from_loaded_dict(references_location: str) -> dict:
+    """
+    This function has the objective of counting the number of articles per year
+    based on the .json created when parsing the .bib referencial.
+
+    Keyword Arguments:
+    references_location: string containing the .json file to be loaded
+
+    Return:
+    sorted_count_by_year_dict: dictionary with all count per year of published
+    articles in the .json file
+    """
+    sorted_count_by_year_dict = dict()
+    _references_location = cmnops.load_json_file(
+        references_location)
+
+    count_references_dict = _count_loaded_dict_file(
+        _references_location, "Journal")
+
+    for key in sorted(count_references_dict):
+        sorted_count_by_year_dict.update({key: count_references_dict[key]})
 
     return sorted_count_by_year_dict
 

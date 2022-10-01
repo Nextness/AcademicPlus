@@ -2,6 +2,7 @@ import src.ResearchManager as resm
 import src.CommonOperations as cmnops
 import dearpygui.dearpygui as dpg
 import textwrap
+import ctypes
 
 MENU_DICTIONARY = {
     "File": {
@@ -105,7 +106,7 @@ def make_research_body(input_dict: dict[str]) -> None:
                 dpg.add_text(
                     default_value=f"Current Paragraph Hash:{cmnops._hash_string(tmp)}",
                     pos=[
-                        620,
+                        650,
                         idx3 * 260 + 140
                     ]
                 )
@@ -113,12 +114,19 @@ def make_research_body(input_dict: dict[str]) -> None:
                 dpg.add_text(
                     default_value=f"Current Paragraph Hash:{cmnops._hash_string(tmp)}",
                     pos=[
-                        620,
+                        650,
                         idx3 * 260 + 160
                     ]
                 )
 
                 tmp = textwrap.fill(tmp, 80)
+                lines = tmp.split("\n")
+                for idx_line, _ in enumerate(lines):
+                    dpg.add_text(
+                        default_value=idx_line,
+                        pos=[627, idx3 * 260 + 180 + (13 * idx_line)]
+                    )
+
                 dpg.add_input_text(
                     readonly=True,
                     tag=f"tag_add_input_text_paragraph_{idx}{idx3}_read_only",
@@ -137,7 +145,7 @@ def make_research_body(input_dict: dict[str]) -> None:
                     tag=f"tag_add_input_text_paragraph_{idx}{idx3}_write",
                     multiline=True,
                     pos=[
-                        620,
+                        650,
                         idx3 * 260 + 180
                     ],
                     default_value=tmp,
@@ -167,3 +175,8 @@ def reserach_metadata(input_dict: dict[str], iteration: str) -> str:
                       f" - Number of Characters: {count_char}"
 
     return information
+
+
+def get_monitor_resolution() -> tuple[int]:
+    user32 = ctypes.windll.user32
+    return user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
