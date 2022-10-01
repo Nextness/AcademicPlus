@@ -11,6 +11,7 @@ return_dict = cmnops.load_json_file(f"{cwd}\{file}")
 
 def load_application() -> None:
 
+    # Creates static widgets for the interface:
     dpg.create_context()
     dpg.configure_app(docking=True, docking_space=True)
 
@@ -18,6 +19,7 @@ def load_application() -> None:
 
         # Wrapper to make the body of the application
         with dpg.window(tag="tag_window_research_body", label="Research Text Comparisson"):
+
             # Wrapper to make top menu bar
             intops.make_menu_bar()
 
@@ -35,6 +37,8 @@ def load_application() -> None:
     dpg.setup_dearpygui()
     dpg.show_viewport()
     dpg.set_primary_window(main, True)
+
+    # Creates dinamic widgets for the interface
     while dpg.is_dearpygui_running():
         # readonly = dpg.get_value(
         #     f"tag_add_input_text_paragraph_00_read_only")

@@ -1,11 +1,11 @@
 import src.CommonOperations as cmnops
 import src.DataStructures as Struct
-import hashlib as hs
 import os
 
 
-def _load_bib_files_from_folder(folder_name: str) -> list:
+def _load_bib_files_from_folder(folder_name: str) -> tuple[list[str], list[str]]:
     """
+    TODO: Update description for this function.
     This function has to objetive of loading all .bib files from a folder
     and parse them into a string to be able to adjust the information it contains.
 
@@ -16,6 +16,7 @@ def _load_bib_files_from_folder(folder_name: str) -> list:
     file_data: concatenation of all .bib data in a string
     """
     all_data = list()
+    list_file_name = list()
     folder = os.walk(folder_name)
     main_folder = next(folder)
     count_all_files = main_folder[2]
@@ -26,14 +27,16 @@ def _load_bib_files_from_folder(folder_name: str) -> list:
             with open(folder_name + file, "r", encoding="UTF-8") as rfile:
                 file_data = rfile.read()
                 all_data += [file_data]
+                list_file_name += [file]
         else:
             continue
 
-    return str(all_data)
+    return all_data, list_file_name
 
 
-def _replace_unnecessary_charcters(all_data: str) -> str:
+def _replace_unnecessary_charcters(all_data: list[str]) -> list[str]:
     """
+    TODO: Update description for this function.
     This function has the objective of replacing characters from the entire .bib string
     to be able to continue processing the data. This step is basically a pre-processing step
     for the next steps.
@@ -53,15 +56,16 @@ def _replace_unnecessary_charcters(all_data: str) -> str:
         "https://doi.org/": ""
     }
 
-    for key, value in replace_dic.items():
-        all_data = all_data.replace(key, value)
+    for idx, _ in enumerate(all_data):
+        for key, value in replace_dic.items():
+            all_data[idx] = all_data[idx].replace(key, value)
 
-    all_data = all_data.encode('UTF-8', 'ignore').decode("UTF-8")
     return all_data
 
 
-def _split_all_data(all_data_str: str) -> list:
+def _split_all_data(all_data: list[str], file_name: list[str]) -> list[str]:
     """
+    TODO: Update description for this function.
     This function has the objective of splitting the pre-processed reference string
     into a list utilizing a specific token called @article.
 
@@ -72,32 +76,31 @@ def _split_all_data(all_data_str: str) -> list:
     all_data_str: pre-processed string formatted reference
 
     Return:
-    data_split_topic: list of all the references splitted by "@article"
+    data_split: list of all the references splitted by "@article"
     """
 
-    data_split = all_data_str.split("@article")
+    data_split = list()
+    for idx1, _ in enumerate(zip(all_data, file_name)):
+        data_split += [all_data[idx1].split("@article")]
+        while "" in data_split[idx1]:
+            data_split[idx1].remove("")
 
-    data_split_topic = list()
-    for item in data_split:
-        data_split_topic = [str(item).split("\\n")] + data_split_topic
+        for idx2, _ in enumerate(data_split[idx1]):
+            if data_split[idx1][idx2] == '\n':
+                del data_split[idx1][idx2]
+            data_split[idx1][idx2] = data_split[idx1][idx2].split("\n")
 
-    for item in data_split_topic:
-        idx_i = data_split_topic.index(item)
-        for topic in item:
-            idx_t = item.index(topic)
-            data_split_topic[idx_i][idx_t] = str(topic).split("=")
-            content_length = len(data_split_topic[idx_i][idx_t])
+            while "" in data_split[idx1][idx2]:
+                data_split[idx1][idx2].remove("")
 
-            if content_length < 2:
-                continue
+            for idx3, topic in enumerate(data_split[idx1][idx2]):
+                if "url" in data_split[idx1][idx2][idx3]:
+                    data_split[idx1][idx2][idx3] = topic.split("=", 1)
+                else:
+                    data_split[idx1][idx2][idx3] = topic.split("=")
+            data_split[idx1][idx2].append(["originalfile", file_name[idx1]])
 
-            data_split_topic[idx_i][idx_t][0] = data_split_topic[idx_i][idx_t][0].replace(
-                " ", "")
-            if data_split_topic[idx_i][idx_t][1][0] == " ":
-                data_split_topic[idx_i][idx_t][1] = data_split_topic[idx_i][idx_t][1].replace(
-                    " ", "", 1)
-
-    return data_split_topic
+    return data_split
 
 
 def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
@@ -122,48 +125,60 @@ def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
     elif dict_key == "url":
         data_entry.URL = dict_value
     elif dict_key == "author":
+        dict_value = dict_value.split(" and ")
         data_entry.Author = dict_value
     elif dict_key == "keywords":
+        if "," in dict_value:
+            dict_value = dict_value.replace(",", ";")
+        dict_value = dict_value.split(";")
+        for idx, keyword in enumerate(dict_value):
+            keyword = keyword.lstrip()
+            dict_value[idx] = keyword
         data_entry.Keywords = dict_value
     elif dict_key == "abstract":
         data_entry.Abstract = dict_value
+    elif dict_key == "originalfile":
+        data_entry.Original_File_Name = dict_value
 
     return data_entry
 
 
-def _structure_data_split(data_split_topic: list) -> dict:
+def _structure_data_split(data_split: list[str]) -> dict[dict[str]]:
     """
+    TODO: Update description for this function.
     This function has the objective of constructing the dictonary based on a
     parsed list with the data from .bib file.
 
     Keyword Arguments:
-    data_split_topic: list with the information from the .bib file already preprocessed
+    data_split: list with the information from the .bib file already preprocessed
 
     Return:
     parser_result: Dictionary with all entries and their description
     """
 
+    iterator = 0
     parser_result = dict()
-    for idx, item in enumerate(data_split_topic):
 
-        entry = Struct.BibDataFormat()
-        for topic in item:
+    for file in data_split:
 
-            topic = str(topic)
-            if topic[0] == '':
-                continue
+        for item in file:
+            entry = Struct.BibDataFormat()
 
-            if len(topic) == 1:
-                entry.Default_Key = topic[0].replace(",", "")
-                continue
+            for topic in item:
+                if len(topic) == 1:
+                    entry.Default_Key = topic[0].replace(",", "")
+                    continue
 
-            key, value = topic[0].casefold(), topic[1]
-            if value[-1] == ",":
-                value = value[::-1].replace(",", "", 1)[::-1]
+                key, value = topic[0].casefold(), topic[1]
+                key, value = key.strip(), value.strip()
 
-            entry = _transform_list_to_BibDataFormat(key, value, entry)
+                if value[-1] == ",":
+                    value = value[::-1].replace(",", "", 1)[::-1]
 
-        parser_result[idx] = cmnops.BibDataFormat_to_dict(entry)
+                entry = _transform_list_to_BibDataFormat(key, value, entry)
+
+            parser_result[iterator] = cmnops.BibDataFormat_to_dict(entry)
+            iterator += 1
 
     return parser_result
 
@@ -180,9 +195,9 @@ def parse_save_bib_references_to_file(folder_name: str, save_file_name_loc: str)
     Return:
     None
     """
-    load_bib = _load_bib_files_from_folder(folder_name)
+    load_bib, orignal_files = _load_bib_files_from_folder(folder_name)
     unnecessary_chars = _replace_unnecessary_charcters(load_bib)
-    split_data = _split_all_data(unnecessary_chars)
+    split_data = _split_all_data(unnecessary_chars, orignal_files)
     structure_data = _structure_data_split(split_data)
     cmnops._save_file_safe(structure_data, save_file_name_loc)
 
