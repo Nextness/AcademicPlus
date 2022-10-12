@@ -1,15 +1,28 @@
+# Imports
 import src.CommonOperations as cmnops
 import src.InterfaceOperations as intops
 import dearpygui.dearpygui as dpg
 import os
 
-
+# Variables
 cwd = os.getcwd()
 file = "..\Research_Analysis\dissertation_textual_content.json"
 return_dict = cmnops.load_json_file(f"{cwd}\{file}")
 
 
+# Functions
 def load_application() -> None:
+    """
+    [Description]
+    | :
+
+    [Argument]
+    | : (Definition)
+
+    [Return]
+    | : (Definition)
+
+    """
 
     # Creates static widgets for the interface:
     dpg.create_context()

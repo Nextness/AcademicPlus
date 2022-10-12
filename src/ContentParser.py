@@ -1,17 +1,24 @@
+# Imports
 import os
 
 
+# Functions
 def load_tex_files_from_folder(folder_name: str, dict_chapter_struc: dict[str]) -> dict[str]:
     """
-    This function has to objetive of loading all .tex files from a folder
-    and parse them into a string to be able to adjust the information it contains.
+    [Description] 
+    | : This function has to objetive of loading all .tex files from a folder
+    | : and parse them into a string to be able to adjust the information it contains.
 
-    Keyword arguments:
-    folder_name: file location as a string
-    dict_chapter_struc: dictonary structure with research project chapters
+    [Argument]
+    | : <str::folder_name>
+    | : (Definition) Folder with .bib files location.
+    | :
+    | : <dict[str]::dict_chapter_struc>
+    | : (Definition) Structure with research project chapters.
 
-    Return:
-    dict_chapter_struc: updated dictonary
+    [Return]
+    | : <dict[str]::dict_chapter_struc>
+    | : (Definition) Updated dictonary.
     """
     all_data = []
     folder = os.walk(folder_name)

@@ -1,51 +1,63 @@
+# Imports
 import src.CommonOperations as cmnops
 import src.DataStructures as Struct
 import os
 
-
-def _load_bib_files_from_folder(folder_name: str) -> tuple[list[str], list[str]]:
+# Functions
+def _load_bib_files_from_folder(folder_name: list[str]) -> tuple[list[str], list[str]]:
     """
-    TODO: Update description for this function.
-    This function has to objetive of loading all .bib files from a folder
-    and parse them into a string to be able to adjust the information it contains.
+    [Warning] 
+    | : Private funtion: Do not use it.
 
-    Keyword arguments:
-    folder_name: file location as a string
+    [Description] 
+    | : This function loads all .bib files from a specified folder. The data is stored
+    | : into a list of strings which is used in another step. A list with all the original file
+    | : names is also generated for the same purpose.
 
-    Return:
-    file_data: concatenation of all .bib data in a string
+    [Argument]
+    | : <str::folder_name>
+    | : (Definition) Folder with .bib files location.
+
+    [Return]
+    | : <list[str]::all_data> 
+    | : (Definition) List with all .bib data.
+    | : 
+    | : <list[str]::list_file_name>
+    | : (Definition) List with all original file names.
     """
-    all_data = list()
-    list_file_name = list()
+    return_list = list()
+    return_file_names_list = list()
+
     folder = os.walk(folder_name)
     main_folder = next(folder)
     count_all_files = main_folder[2]
 
     for file in count_all_files:
-        validation = ".bib" == file[-4:]
-        if validation:
+        if file[-4:] == ".bib":
             with open(folder_name + file, "r", encoding="UTF-8") as rfile:
                 file_data = rfile.read()
-                all_data += [file_data]
-                list_file_name += [file]
-        else:
-            continue
+                return_list += [file_data]
+                return_file_names_list += [file]
 
-    return all_data, list_file_name
+    return return_list, return_file_names_list
 
 
-def _replace_unnecessary_charcters(all_data: list[str]) -> list[str]:
-    """
-    TODO: Update description for this function.
-    This function has the objective of replacing characters from the entire .bib string
-    to be able to continue processing the data. This step is basically a pre-processing step
-    for the next steps.
+def _replace_unnecessary_charcters(list_references: list[str]) -> list[str]:
+    """ 
+    [Warning]
+    | : Private funtion: Do not use it.
 
-    Keyword arguments:
-    all_data: string formatted reference
+    [Description] 
+    | : This function replaces unnecessary characters from the .bib list, generated on a 
+    | : previous step, to continue processing the data.
 
-    Return:
-    all_data: pre-processed concatenation of all .bib data in a string
+    [Argument]
+    | : <list[str]::list_references> 
+    | : (Definition) List with all .bib data.
+
+    [Return]
+    | : <list[str]::list_references> 
+    | : (Definition) List with all .bib pre-processed data.
     """
     replace_dic = {
         "@ARTICLE": "@article",
@@ -56,32 +68,41 @@ def _replace_unnecessary_charcters(all_data: list[str]) -> list[str]:
         "https://doi.org/": ""
     }
 
-    for idx, _ in enumerate(all_data):
+    for idx, _ in enumerate(list_references):
         for key, value in replace_dic.items():
-            all_data[idx] = all_data[idx].replace(key, value)
+            list_references[idx] = list_references[idx].replace(key, value)
 
-    return all_data
+    return list_references
 
 
-def _split_all_data(all_data: list[str], file_name: list[str]) -> list[str]:
+def _split_all_data(list_references: list[str], list_file_name: list[str]) -> list[str]:
     """
-    TODO: Update description for this function.
-    This function has the objective of splitting the pre-processed reference string
-    into a list utilizing a specific token called @article.
+    [Warning]
+    | : Private funtion: Do not use it.
 
-    NOTE: this step only considers @articles. Other .bib reference formats are not supported
-    and might cause problems if contained in the referencial.
+    [Description] 
+    | : This function has the objective of splitting the pre-processed .bib list
+    | : into a multiple items.
 
-    Keyword arguments:
-    all_data_str: pre-processed string formatted reference
+    [Note] 
+    | : This function only considers @articles. Other .bib reference formats are not supported
+    | : and might cause problems if contained in the referencial.
 
-    Return:
-    data_split: list of all the references splitted by "@article"
+    [Argument] 
+    | : <str::list_references> 
+    | : (Definition) List with all .bib pre-processed data.
+    | :
+    | : <str::list_file_name>
+    | : (Definition) List with all original file names.
+
+    [Return]
+    | : <list[str]::data_split>
+    | : (Definition) List of all the references splitted by "@article".
     """
 
     data_split = list()
-    for idx1, _ in enumerate(zip(all_data, file_name)):
-        data_split += [all_data[idx1].split("@article")]
+    for idx1, _ in enumerate(zip(list_references, list_file_name)):
+        data_split += [list_references[idx1].split("@article")]
         while "" in data_split[idx1]:
             data_split[idx1].remove("")
 
@@ -89,7 +110,6 @@ def _split_all_data(all_data: list[str], file_name: list[str]) -> list[str]:
             if data_split[idx1][idx2] == '\n':
                 del data_split[idx1][idx2]
             data_split[idx1][idx2] = data_split[idx1][idx2].split("\n")
-
             while "" in data_split[idx1][idx2]:
                 data_split[idx1][idx2].remove("")
 
@@ -98,15 +118,40 @@ def _split_all_data(all_data: list[str], file_name: list[str]) -> list[str]:
                     data_split[idx1][idx2][idx3] = topic.split("=", 1)
                 else:
                     data_split[idx1][idx2][idx3] = topic.split("=")
-            data_split[idx1][idx2].append(["originalfile", file_name[idx1]])
+
+            data_split[idx1][idx2].append(["originalfile", list_file_name[idx1]])
 
     return data_split
 
 
-def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
-                                     data_entry: Struct.BibDataFormat) -> Struct.BibDataFormat:
+def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int, data_entry: Struct.BibDataFormat) -> Struct.BibDataFormat:
+    """
+    #TODO: Maybe refactor this Function.
+    [Warning] 
+    | : Private funtion: Do not use it.
 
-    # TODO: include description of this function.
+    [Description] 
+    | : This function converts a key and value pair into a data structure
+    | : which can be more easily manibulated.
+
+    [Note]
+    | This function not only is private but also, if python had the option,
+    | an inline function.
+    
+    [Argument]
+    | : <str::dict_key> 
+    | : (Definition) Dictonary key which will be used to map into the BibDataFormat.
+    | :
+    | : <(str|int)::dict_value> 
+    | : (Definition) Dictonary value which will be mapped.
+    | : 
+    | : <Struct.BibDataFormat::data_entry> 
+    | : (Definition) Data structure which is being mapped into.
+
+    [Return]
+    | : <Struct.BibDataFormat::data_entry> 
+    | : (Definition) Mapped structure.
+    """
     if dict_key == "title":
         data_entry.Title = dict_value
     elif dict_key == "journal":
@@ -136,6 +181,7 @@ def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
             dict_value[idx] = keyword
         data_entry.Keywords = dict_value
     elif dict_key == "abstract":
+        dict_value = dict_value.replace("\n", "")
         data_entry.Abstract = dict_value
     elif dict_key == "originalfile":
         data_entry.Original_File_Name = dict_value
@@ -143,23 +189,28 @@ def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int,
     return data_entry
 
 
-def _structure_data_split(data_split: list[str]) -> dict[dict[str]]:
+def _structure_data_split(list_references: list[str]) -> dict[dict[str]]:
     """
-    TODO: Update description for this function.
-    This function has the objective of constructing the dictonary based on a
-    parsed list with the data from .bib file.
+    [Warning] 
+    | : Private funtion: Do not use it.
 
-    Keyword Arguments:
-    data_split: list with the information from the .bib file already preprocessed
+    [Description] 
+    | : This function constructs a dictonary based on a
+    | : parsed list with the data from a pre-processed .bib file.
 
-    Return:
-    parser_result: Dictionary with all entries and their description
+    [Argument]
+    | : <list[str]::data_split> 
+    | : (Definition) List of all the references splitted by "@article".
+
+    [Return]
+    | : <dict[dict[str]]::parser_result>
+    | : (Definition) Dictionary with all entries and their description.
     """
 
     iterator = 0
     parser_result = dict()
 
-    for file in data_split:
+    for file in list_references:
 
         for item in file:
             entry = Struct.BibDataFormat()
@@ -185,19 +236,24 @@ def _structure_data_split(data_split: list[str]) -> dict[dict[str]]:
 
 def parse_save_bib_references_to_file(folder_name: str, save_file_name_loc: str) -> None:
     """
-    This function has the objective of parse all data from a folder location and save it
-    in a specific location as a .json file to be utilized for later analysis.
+    [Description]
+    | : This function has the objective of parse all data from a folder location and save it
+    | : in a specific location as a .json file.
 
-    Keyword Arguments:
-    folder_name: folder in which all .bib files are stored
-    save_file_name_loc: string containing the location to save the file and the name to be utilized
+    [Argument]
+    | : <str::folder_name>
+    | : (Definition) Folder with .bib files location.
+    | :
+    | : <str::save_file_name_loc>
+    | : (Definition) File location to save parsed data.
 
-    Return:
-    None
+    [Return]
+    | : <None::None>
+    | : (Definition) Succesfully parsed file.
     """
-    load_bib, orignal_files = _load_bib_files_from_folder(folder_name)
-    unnecessary_chars = _replace_unnecessary_charcters(load_bib)
-    split_data = _split_all_data(unnecessary_chars, orignal_files)
+    loaded_references, orignal_files = _load_bib_files_from_folder(folder_name)
+    remove_chars = _replace_unnecessary_charcters(loaded_references)
+    split_data = _split_all_data(remove_chars, orignal_files)
     structure_data = _structure_data_split(split_data)
     cmnops._save_file_safe(structure_data, save_file_name_loc)
 

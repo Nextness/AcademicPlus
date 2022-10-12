@@ -1,9 +1,11 @@
+# Imports
 import src.ResearchManager as resm
 import src.CommonOperations as cmnops
 import dearpygui.dearpygui as dpg
 import textwrap
 import ctypes
 
+# Constants
 MENU_DICTIONARY = {
     "File": {
         "new_file": ("New Academic File", "(Ctrl + N)"),
@@ -25,7 +27,20 @@ MENU_DICTIONARY = {
 }
 
 
+# Functions
 def make_menu_bar() -> None:
+    """
+    [Description]
+    | :
+
+    [Argument]
+    | : (Definition)
+
+    [Return]
+    | : (Definition)
+
+    """
+
     with dpg.menu_bar():
 
         with dpg.menu(tag="tag_menu_file", label="File"):
@@ -56,6 +71,17 @@ def make_menu_bar() -> None:
 
 
 def make_research_metadata(input_dict: dict[str]) -> None:
+    """
+    [Description]
+    | :
+
+    [Argument]
+    | : (Definition)
+
+    [Return]
+    | : (Definition)
+
+    """
 
     with dpg.window(tag="tag_window_file_metadata", label="Research Metadata", no_close=True, pos=(1350, 120)):
         for idx1, item in enumerate(input_dict):
@@ -69,6 +95,17 @@ def make_research_metadata(input_dict: dict[str]) -> None:
 
 
 def make_research_body(input_dict: dict[str]) -> None:
+    """
+    [Description]
+    | :
+
+    [Argument]
+    | : (Definition)
+
+    [Return]
+    | : (Definition)
+
+    """
 
     for idx, item in enumerate(input_dict):
 
@@ -158,7 +195,17 @@ def make_research_body(input_dict: dict[str]) -> None:
 
 
 def reserach_metadata(input_dict: dict[str], iteration: str) -> str:
+    """
+    [Description]
+    | :
 
+    [Argument]
+    | : (Definition)
+
+    [Return]
+    | : (Definition)
+
+    """
     title = input_dict[iteration]["Name"]
     paragraph_count = len(input_dict[iteration]["Content"])
     count_char, count_words = 0, 0
@@ -178,5 +225,16 @@ def reserach_metadata(input_dict: dict[str], iteration: str) -> str:
 
 
 def get_monitor_resolution() -> tuple[int]:
+    """
+    [Description]
+    | :
+
+    [Argument]
+    | : (Definition)
+
+    [Return]
+    | : (Definition)
+
+    """
     user32 = ctypes.windll.user32
     return user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
