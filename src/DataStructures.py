@@ -1,9 +1,11 @@
+# Imports
 from dataclasses import dataclass
-import src.CommonOperations as cmnops
 
+# Constants
 NOT_PROVIDED = "Not_Provided"
 
 
+# Dataclasses
 @dataclass
 class BibDataFormat:
     Original_File_Name: str = NOT_PROVIDED
@@ -31,7 +33,7 @@ class TexDataFormat:
 
 @dataclass
 class _JsonDataFormat:
-    Index: int = "NOT PROIDED"
+    Index: int = NOT_PROVIDED
     Content: BibDataFormat | TexDataFormat = NOT_PROVIDED
 
 
