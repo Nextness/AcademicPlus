@@ -1,9 +1,16 @@
-# Imports
-import src.CommonOperations as cmnops
-import src.DataStructures as Struct
+# ===================================================== #
+#                 ~~~~ < Imports > ~~~~                 #
+# ===================================================== #
+
+import src.Common.Operations as cmnops
+import src.Data.Structures as Struct
 import os
 
-# Functions
+
+# ===================================================== #
+#                ~~~~ < Functions > ~~~~                #
+# ===================================================== #
+
 def _load_bib_files_from_folder(folder_name: list[str]) -> tuple[list[str], list[str]]:
     """
     [Warning] 

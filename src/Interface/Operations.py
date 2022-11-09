@@ -1,11 +1,18 @@
-# Imports
-import src.ResearchManager as resm
-import src.CommonOperations as cmnops
+# ===================================================== #
+#                 ~~~~ < Imports > ~~~~                 #
+# ===================================================== #
+
+import src.Research.Manager as resm
+import src.Common.Operations as cmnops
 import dearpygui.dearpygui as dpg
 import textwrap
 import ctypes
 
-# Constants
+
+# ===================================================== #
+#                ~~~~ < Constants > ~~~~                #
+# ===================================================== #
+
 MENU_DICTIONARY = {
     "File": {
         "new_file": ("New Academic File", "(Ctrl + N)"),
@@ -27,9 +34,19 @@ MENU_DICTIONARY = {
 }
 
 
-# Functions
+# ===================================================== #
+#                ~~~~ < Functions > ~~~~                #
+# ===================================================== #
+
 def make_menu_bar() -> None:
     """
+    [Tags]
+    | : @IsMaintained <True>
+    | : @IsPrivate <False>
+    | : @IsDemoCompliant <False>
+    | : @ToBeDeprecated <False>
+    | : @IsDeprecated <False>
+
     [Description]
     | :
 
@@ -72,6 +89,13 @@ def make_menu_bar() -> None:
 
 def make_research_metadata(input_dict: dict[str]) -> None:
     """
+    [Tags]
+    | : @IsMaintained <True>
+    | : @IsPrivate <False>
+    | : @IsDemoCompliant <False>
+    | : @ToBeDeprecated <False>
+    | : @IsDeprecated <False>
+
     [Description]
     | :
 
@@ -96,6 +120,13 @@ def make_research_metadata(input_dict: dict[str]) -> None:
 
 def make_research_body(input_dict: dict[str]) -> None:
     """
+    [Tags]
+    | : @IsMaintained <True>
+    | : @IsPrivate <False>
+    | : @IsDemoCompliant <False>
+    | : @ToBeDeprecated <False>
+    | : @IsDeprecated <False>
+
     [Description]
     | :
 
@@ -196,6 +227,13 @@ def make_research_body(input_dict: dict[str]) -> None:
 
 def reserach_metadata(input_dict: dict[str], iteration: str) -> str:
     """
+    [Tags]
+    | : @IsMaintained <True>
+    | : @IsPrivate <False>
+    | : @IsDemoCompliant <False>
+    | : @ToBeDeprecated <False>
+    | : @IsDeprecated <False>
+
     [Description]
     | :
 
@@ -226,6 +264,13 @@ def reserach_metadata(input_dict: dict[str], iteration: str) -> str:
 
 def get_monitor_resolution() -> tuple[int]:
     """
+    [Tags]
+    | : @IsMaintained <True>
+    | : @IsPrivate <False>
+    | : @IsDemoCompliant <False>
+    | : @ToBeDeprecated <False>
+    | : @IsDeprecated <False>
+
     [Description]
     | :
 
