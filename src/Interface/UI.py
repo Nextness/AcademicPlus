@@ -1,16 +1,26 @@
-# Imports
-import src.CommonOperations as cmnops
-import src.InterfaceOperations as intops
+# ===================================================== #
+#                 ~~~~ < Imports > ~~~~                 #
+# ===================================================== #
+
+import src.Common.Operations as cmnops
+import src.Interface.Operations as intops
 import dearpygui.dearpygui as dpg
 import os
 
-# Variables
+
+# ===================================================== #
+#                ~~~~ < Variables > ~~~~                #
+# ===================================================== #
+
 cwd = os.getcwd()
 file = "..\Research_Analysis\dissertation_textual_content.json"
 return_dict = cmnops.load_json_file(f"{cwd}\{file}")
 
 
-# Functions
+# ===================================================== #
+#                ~~~~ < Functions > ~~~~                #
+# ===================================================== #
+
 def load_application() -> None:
     """
     [Description]
@@ -21,7 +31,6 @@ def load_application() -> None:
 
     [Return]
     | : (Definition)
-
     """
 
     # Creates static widgets for the interface:

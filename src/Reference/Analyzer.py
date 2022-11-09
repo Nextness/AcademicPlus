@@ -1,10 +1,34 @@
-# Imports
+# ===================================================== #
+#                 ~~~~ < Imports > ~~~~                 #
+# ===================================================== #
+
 from attr import asdict
-import src.CommonOperations as cmnops
+import src.Common.Operations as cmnops
 import matplotlib.pyplot as plt
 
 
-# Functions
+# ===================================================== #
+#                ~~~~ < Functions > ~~~~                #
+# ===================================================== #
+
+def pos_based_on_hash(reference_location: str, hashed_id: str) -> None:
+    """
+    [Description]
+    | : #TODO: Include description.
+
+    [Argument]
+    | : #TODO: Include arguments and definition.
+
+    [Return]
+    | : #TODO: Include return and definition.
+    """
+    lookup_dict = cmnops.load_json_file(reference_location)
+    for article in lookup_dict:
+        if lookup_dict[article]["Hashed_DOI"] == hashed_id:
+            print(article)
+    return
+
+
 def references_differential_from_file(new_references_location: str, old_references_location: str) -> dict[str]:
     """
     [Description]
@@ -534,8 +558,8 @@ def plot_artcles_per_year_from_file(references_location: str) -> None:
     | : (Definition) Plot Successfully displayed.
     """
 
-    year_count_data = count_references_by_year_from_file(references_location)
-    plt.figure(figsize=(10, 8))
-    plt.bar(year_count_data.keys(), year_count_data.values(),
-            0.9, color='darkblue', edgecolor='black', linewidth=2)
+    # year_count_data = count_references_by_year_from_file(references_location)
+    # plt.figure(figsize=(10, 8))
+    # plt.bar(year_count_data.keys(), year_count_data.values(),
+    #         0.9, color='darkblue', edgecolor='black', linewidth=2)
     return None
