@@ -173,7 +173,7 @@ def _transform_list_to_BibDataFormat(dict_key: str, dict_value: str | int, data_
         data_entry.ISSN = dict_value
     elif dict_key == "doi":
         data_entry.DOI = dict_value
-        data_entry.Hashed_DOI = cmnops._hash_string(dict_value)
+        data_entry.Hashed_DOI = cmnops.hash_string(dict_value)
     elif dict_key == "url":
         data_entry.URL = dict_value
     elif dict_key == "author":
