@@ -1,4 +1,6 @@
 __pycache__/
 demodpg.py
 *.ipynb
-*.Stack.json
+*.json
+*.srl
+*.ndpos
