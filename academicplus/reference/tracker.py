@@ -2,8 +2,8 @@
 #                 ~~~~ < Imports > ~~~~                 #
 # ===================================================== #
 
-import academicplus.Common.Operations as cmnops
-import academicplus.Data.Structures as Struct
+import academicplus.common.operations as cmnops
+import academicplus.data.structures as Struct
 
 
 # ===================================================== #
