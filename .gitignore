@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 __pycache__/
 demodpg.py
 *.ipynb
 *.json
 *.srl
 *.ndpos
+=======
+__pycache__/
+demodpg.py
+*.ipynb
+*.Stack.json
+>>>>>>> d39f3a1cd4c740e39d4523e310b3d69979c6b16f
